@@ -1,0 +1,7 @@
+FROM wernight/ngrok
+
+ENV NGROK_AUTH_TOKEN=${NGROK_AUTH_TOKEN}
+ENV NGROK_REGION=${NGROK_REGION}
+ENV NGROK_PORT=${NGROK_PORT}
+
+CMD ["ngrok", "http", "--region=$NGROK_REGION", "--log=stdout", "--log-level=info", "$NGROK_PORT"]

@@ -1,5 +1,8 @@
 from app import celery, mail, app
 from flask_mail import Message
+from dotenv import load_dotenv
+# Load environment variables from .env file
+load_dotenv()
 
 @celery.task
 def send_email(to):

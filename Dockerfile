@@ -10,8 +10,17 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose port 5000 for Flask
+# Expose port 5000 for Flask (assuming your Flask app runs on port 5000)
 EXPOSE 5000
+
+# Set environment variables
+ENV MAIL_SERVER=${MAIL_SERVER}
+ENV MAIL_PORT=${MAIL_PORT}
+ENV MAIL_USE_TLS=${MAIL_USE_TLS}
+ENV MAIL_USERNAME=${MAIL_USERNAME}
+ENV MAIL_PASSWORD=${MAIL_PASSWORD}
+ENV CELERY_BROKER_URL=${CELERY_BROKER_URL}
+ENV CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
 
 # Define environment variable
 ENV NAME FlaskApp

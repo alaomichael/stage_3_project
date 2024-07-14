@@ -1,42 +1,83 @@
 version: '3.8'
 
 services:
-  rabbitmq:
-    image: 'rabbitmq:3-management'
-    ports:
-      - '5672:5672'
-      - '15672:15672'
-
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    command: flask run --host=0.0.0.0
-    volumes:
-      - .:/app
     ports:
-      - '5000:5000'
-    depends_on:
-      - rabbitmq
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - MAIL_SERVER=${MAIL_SERVER:-smtp.gmail.com}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USE_TLS=${MAIL_USE_TLS:-True}
+      - MAIL_USE_SSL=${MAIL_USE_SSL:-False}
+      - MAIL_USERNAME=${MAIL_USERNAME:-devmichaelalao@gmail.com}
+      - MAIL_PASSWORD=${MAIL_PASSWORD:-babatunde_2503}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL:-amqp://guest:guest@rabbitmq//}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND:-rpc://}
     env_file:
-      - .env   # Load environment variables from .env file
+      - .env             
+    networks:
+      - messaging_network
+    depends_on:
+      - ngrok
+      - rabbitmq
+
+  ngrok:
+    build:
+      context: .
+      dockerfile: Dockerfile.ngrok
+    environment:
+      - NGROK_AUTH_TOKEN=${NGROK_AUTH_TOKEN}
+      - NGROK_REGION=${NGROK_REGION:-us}
+      - NGROK_PORT=${NGROK_PORT:-5000}
+    env_file:
+      - .env             
+    ports:
+      - "4040:4040"
+    networks:
+      - messaging_network
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - messaging_network
+    depends_on:
+      - web
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    env_file:
+      - .env             
+    networks:
+      - messaging_network
 
   worker:
     build:
       context: .
       dockerfile: Dockerfile.celery
-    volumes:
-      - .:/app
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL:-amqp://guest:guest@rabbitmq//}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND:-rpc://}
+    env_file:
+      - .env       
+    networks:
+      - messaging_network
     depends_on:
       - rabbitmq
-    env_file:
-      - .env   # Load environment variables from .env file
 
-  nginx:
-    image: nginx:latest
-    ports:
-      - '80:80'
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - web
+networks:
+  messaging_network:
+    driver: bridge
