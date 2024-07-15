@@ -4,11 +4,14 @@ FROM python:3.9
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Copy the requirements file into the container at /app
+COPY requirements.txt .
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the current directory contents into the container at /app
+COPY . .
 
 # Expose port 5000 for Flask (assuming your Flask app runs on port 5000)
 EXPOSE 5000
@@ -22,7 +25,7 @@ ENV MAIL_PASSWORD=${MAIL_PASSWORD}
 ENV CELERY_BROKER_URL=${CELERY_BROKER_URL}
 ENV CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
 
-# Define environment variable
+# Define an environment variable
 ENV NAME FlaskApp
 
 # Run app.py when the container launches

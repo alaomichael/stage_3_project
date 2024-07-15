@@ -1,7 +1,16 @@
 FROM wernight/ngrok
+# # # Set default values for NGROK_AUTH_TOKEN, NGROK_REGION, and NGROK_PORT
+# ENV NGROK_AUTH_TOKEN=${NGROK_AUTH_TOKEN:-2ACnR4qRSwhcwJfbW1ixBONRcbX_4NzAcUXcNXM7aREcX87oY}
+# ENV NGROK_REGION=${NGROK_REGION:-us}
+# ENV NGROK_PORT=${NGROK_PORT:-5000}
 
-ENV NGROK_AUTH_TOKEN=${NGROK_AUTH_TOKEN}
-ENV NGROK_REGION=${NGROK_REGION}
-ENV NGROK_PORT=${NGROK_PORT}
+# FROM wernight/ngrok
 
-CMD ["ngrok", "http", "--region=$NGROK_REGION", "--log=stdout", "--log-level=info", "$NGROK_PORT"]
+# Create ngrok config directory
+RUN mkdir -p /home/ngrok/.config/ngrok
+
+# Copy ngrok config file
+COPY ngrok.yml /home/ngrok/.config/ngrok/ngrok.yml
+
+# Set default command to start Ngrok
+CMD ["ngrok", "start", "--all", "--config", "/home/ngrok/.config/ngrok/ngrok.yml","--log=stdout", "--log-level=info"]
