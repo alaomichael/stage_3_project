@@ -6,10 +6,10 @@
 #     proto: http
 #     addr: ${NGROK_PORT}
 
-version: 2
+version: "2"
 authtoken: 2ACnR4qRSwhcwJfbW1ixBONRcbX_4NzAcUXcNXM7aREcX87oY
 region: us
 tunnels:
   web:
     proto: http
-    addr: 5000
+    addr: web:5000
