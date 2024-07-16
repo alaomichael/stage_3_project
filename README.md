@@ -20,8 +20,8 @@ Create a `.env` file in the project root and add the following variables:
 
 1. Clone the repository:
     ```
-    git clone https://github.com/yourusername/flask-celery-email.git
-    cd flask-celery-email
+    git clone https://github.com/alaomichael/stage_3_project.git
+    cd stage_3_project
     ```
 
 2. Build the Docker image for Celery:
